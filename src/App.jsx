@@ -1,11 +1,16 @@
+import { ThemeProvider } from "./contexts/ThemeContext";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+
 function App() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center mt-10">
-        Portfolio Coming Soon 🚀
-      </h1>
-    </div>
-  )
+    <ThemeProvider>
+      <div className="bg-[#0A0F1E] min-h-screen font-sans">
+        <Navbar />
+        <Hero />
+      </div>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;
