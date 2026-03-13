@@ -1,40 +1,44 @@
 import { portfolioData } from "../data/portfolioData";
+import { HiAcademicCap } from "react-icons/hi";
+import { FiCalendar, FiAward } from "react-icons/fi";
 
 export default function Education() {
   return (
-    <section id="education" className="py-24 bg-[#0A0F1E]">
+    <section id="education" className="py-24 bg-[#09090B]">
       <div className="max-w-6xl mx-auto px-6">
 
         <div className="mb-16">
-          <p className="font-mono text-[#3B82F6] text-sm tracking-widest uppercase mb-3">
+          <p className="font-mono text-[#7C3AED] text-xs tracking-widest uppercase mb-3">
             // 02. Education
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#F0F4FF] tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-[#FAFAFA] tracking-tight">
             Education
           </h2>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5">
           {portfolioData.education.map((edu, index) => (
             <div
               key={index}
-              className="flex gap-6 p-6 rounded-xl bg-[#131D35] border border-[#1E2D4A] hover:border-[#3B82F6]/50 transition-all duration-300 group"
+              className="flex gap-5 p-6 rounded-xl bg-[#18181B] border border-[#27272A] hover:border-[#7C3AED]/50 hover:shadow-glow transition-all duration-300 group"
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/30 flex items-center justify-center">
-                <span className="text-[#3B82F6] text-xl font-bold">🎓</span>
+              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#7C3AED]/10 border border-[#7C3AED]/20 flex items-center justify-center">
+                <HiAcademicCap size={22} className="text-[#7C3AED]" />
               </div>
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                  <h3 className="text-lg font-semibold text-[#F0F4FF]">{edu.degree}</h3>
-                  <span className="font-mono text-xs text-[#3B82F6] bg-[#3B82F6]/10 px-3 py-1 rounded-full w-fit">
+                  <h3 className="text-lg font-semibold text-[#FAFAFA]">{edu.degree}</h3>
+                  <div className="flex items-center gap-1.5 font-mono text-xs text-[#7C3AED] bg-[#7C3AED]/10 px-3 py-1 rounded-full w-fit border border-[#7C3AED]/20">
+                    <FiCalendar size={11} />
                     {edu.year}
-                  </span>
+                  </div>
                 </div>
-                <p className="text-[#94A3B8] font-medium mb-1">{edu.institution}</p>
+                <p className="text-[#A78BFA] font-medium text-sm mb-2">{edu.institution}</p>
                 {edu.grade && (
-                  <p className="text-[#94A3B8] text-sm">
-                    Grade: <span className="text-[#06B6D4]">{edu.grade}</span>
-                  </p>
+                  <div className="flex items-center gap-1.5 text-[#A1A1AA] text-sm">
+                    <FiAward size={13} className="text-[#7C3AED]" />
+                    <span>Grade: <span className="text-[#A78BFA] font-medium">{edu.grade}</span></span>
+                  </div>
                 )}
               </div>
             </div>
