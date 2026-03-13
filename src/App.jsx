@@ -15,7 +15,7 @@ import Footer from "./components/Footer";
 function App() {
   return (
     <ThemeProvider>
-      <div className="bg-[#0A0F1E] min-h-screen font-sans">
+      <div className="bg-skin-base min-h-screen font-sans transition-colors duration-300">
         <Navbar />
         <Hero />
         <About />

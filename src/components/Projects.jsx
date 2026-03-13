@@ -2,65 +2,75 @@ import { portfolioData } from "../data/portfolioData";
 import { FiGithub, FiExternalLink, FiStar } from "react-icons/fi";
 
 const statusColors = {
-  "In Progress": "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
-  "Completed": "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-  "Live": "text-[#A78BFA] bg-[#7C3AED]/10 border-[#7C3AED]/20",
+  "In Progress": { color: "#FBBF24", bg: "rgba(251,191,36,0.1)", border: "rgba(251,191,36,0.2)" },
+  "Completed": { color: "#34D399", bg: "rgba(52,211,153,0.1)", border: "rgba(52,211,153,0.2)" },
+  "Live": { color: "#60A5FA", bg: "rgba(96,165,250,0.1)", border: "rgba(96,165,250,0.2)" },
 };
+
+function StatusBadge({ status }) {
+  const s = statusColors[status] || { color: "var(--text-muted)", bg: "var(--bg-card)", border: "var(--border)" };
+  return (
+    <span className="font-mono text-xs px-3 py-1 rounded-full border"
+      style={{ color: s.color, backgroundColor: s.bg, borderColor: s.border }}>
+      {status}
+    </span>
+  );
+}
 
 export default function Projects() {
   const featured = portfolioData.projects.filter((p) => p.featured);
   const rest = portfolioData.projects.filter((p) => !p.featured);
 
   return (
-    <section id="projects" className="py-24 bg-[#0F0F12]">
+    <section id="projects" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-secondary)" }}>
       <div className="max-w-6xl mx-auto px-6">
-
         <div className="mb-16">
-          <p className="font-mono text-[#7C3AED] text-xs tracking-widest uppercase mb-3">
-            // 05. Projects
-          </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#FAFAFA] tracking-tight">
-            Projects
-          </h2>
+          <p className="font-mono text-xs tracking-widest uppercase mb-3" style={{ color: "var(--accent)" }}>// 05. Projects</p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>Projects</h2>
         </div>
 
-        {featured.map((project, index) => (
-          <div
-            key={index}
-            className="mb-6 p-8 rounded-xl bg-[#18181B] border border-[#7C3AED]/30 hover:border-[#7C3AED]/60 hover:shadow-glow-lg transition-all duration-300 relative overflow-hidden"
+        {featured.map((project, i) => (
+          <div key={i} className="mb-6 p-8 rounded-xl border relative overflow-hidden transition-all duration-300"
+            style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--accent-glow)" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.boxShadow = "0 0 48px var(--accent-glow)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--accent-glow)"; e.currentTarget.style.boxShadow = "none"; }}
           >
-            <div className="absolute top-0 right-0 w-72 h-72 bg-[#7C3AED] opacity-[0.04] rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-72 h-72 rounded-full blur-3xl pointer-events-none opacity-5"
+              style={{ backgroundColor: "var(--accent)" }} />
             <div className="relative z-10">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 font-mono text-xs text-[#A78BFA]">
-                    <FiStar size={13} className="fill-[#7C3AED] text-[#7C3AED]" />
-                    Featured Project
+                  <div className="flex items-center gap-1.5 font-mono text-xs" style={{ color: "var(--accent-light)" }}>
+                    <FiStar size={13} style={{ fill: "var(--accent)", color: "var(--accent)" }} /> Featured Project
                   </div>
-                  <span className={"font-mono text-xs px-3 py-1 rounded-full border " + (statusColors[project.status] || "text-[#A1A1AA]")}>
-                    {project.status}
-                  </span>
+                  <StatusBadge status={project.status} />
                 </div>
                 <div className="flex gap-3">
                   {project.githubUrl && (
                     <a href={project.githubUrl} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-xs text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors border border-[#27272A] hover:border-[#7C3AED]/50 px-4 py-2 rounded-lg">
-                      <FiGithub size={14} /> GitHub
+                      className="flex items-center gap-1.5 font-mono text-xs px-4 py-2 rounded-lg border transition-all duration-200"
+                      style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}
+                    >
+                      <FiGithub size={13} /> GitHub
                     </a>
                   )}
                   {project.liveUrl && (
                     <a href={project.liveUrl} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-xs text-white bg-[#7C3AED] hover:bg-[#6D28D9] px-4 py-2 rounded-lg transition-colors">
-                      <FiExternalLink size={14} /> Live Demo
+                      className="flex items-center gap-1.5 font-mono text-xs px-4 py-2 rounded-lg text-white transition-all duration-200"
+                      style={{ backgroundColor: "var(--accent)" }}>
+                      <FiExternalLink size={13} /> Live Demo
                     </a>
                   )}
                 </div>
               </div>
-              <h3 className="text-2xl font-bold text-[#FAFAFA] mb-3">{project.name}</h3>
-              <p className="text-[#A1A1AA] leading-relaxed mb-6">{project.desc}</p>
+              <h3 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>{project.name}</h3>
+              <p className="leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>{project.desc}</p>
               <div className="flex flex-wrap gap-2">
                 {project.tech.map((t) => (
-                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg bg-[#7C3AED]/10 text-[#A78BFA] border border-[#7C3AED]/20">
+                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg border"
+                    style={{ backgroundColor: "var(--accent-glow)", color: "var(--accent-light)", borderColor: "var(--border-hover)" }}>
                     {t}
                   </span>
                 ))}
@@ -69,36 +79,40 @@ export default function Projects() {
           </div>
         ))}
 
-        <div className="grid md:grid-cols-2 gap-5">
-          {rest.map((project, index) => (
-            <div
-              key={index}
-              className="p-6 rounded-xl bg-[#18181B] border border-[#27272A] hover:border-[#7C3AED]/50 hover:shadow-glow transition-all duration-300"
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {rest.map((project, i) => (
+            <div key={i} className="p-6 rounded-xl border transition-all duration-300"
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.boxShadow = "0 0 24px var(--accent-glow)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
             >
               <div className="flex items-center justify-between gap-3 mb-4">
-                <span className={"font-mono text-xs px-3 py-1 rounded-full border " + (statusColors[project.status] || "text-[#A1A1AA]")}>
-                  {project.status}
-                </span>
+                <StatusBadge status={project.status} />
                 <div className="flex gap-3">
                   {project.githubUrl && (
                     <a href={project.githubUrl} target="_blank" rel="noreferrer"
-                      className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors">
+                      className="transition-colors" style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--text-primary)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>
                       <FiGithub size={17} />
                     </a>
                   )}
                   {project.liveUrl && (
                     <a href={project.liveUrl} target="_blank" rel="noreferrer"
-                      className="text-[#A1A1AA] hover:text-[#A78BFA] transition-colors">
+                      className="transition-colors" style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--accent)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>
                       <FiExternalLink size={17} />
                     </a>
                   )}
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-[#FAFAFA] mb-2">{project.name}</h3>
-              <p className="text-[#A1A1AA] text-sm leading-relaxed mb-4">{project.desc}</p>
+              <h3 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>{project.name}</h3>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>{project.desc}</p>
               <div className="flex flex-wrap gap-2">
                 {project.tech.map((t) => (
-                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg bg-[#09090B] text-[#A1A1AA] border border-[#27272A] hover:border-[#7C3AED]/30 transition-colors">
+                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg border"
+                    style={{ backgroundColor: "var(--bg-secondary)", color: "var(--text-muted)", borderColor: "var(--border)" }}>
                     {t}
                   </span>
                 ))}

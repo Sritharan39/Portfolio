@@ -23,18 +23,20 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navClass = scrolled
-    ? "bg-[#09090B]/80 backdrop-blur-md border-b border-[#27272A]"
-    : "bg-transparent";
-
   return (
-    <nav className={"fixed top-0 left-0 right-0 z-50 transition-all duration-300 " + navClass}>
+    <nav
+      style={{
+        backgroundColor: scrolled ? "var(--bg-primary)" : "transparent",
+        borderBottomColor: scrolled ? "var(--border)" : "transparent",
+      }}
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b backdrop-blur-md"
+    >
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        <a href="#" className="font-mono text-lg font-semibold text-[#7C3AED]">
-          <span className="text-[#52525B]">&lt;</span>
+        <a href="#" className="font-mono text-base font-semibold" style={{ color: "var(--accent)" }}>
+          <span style={{ color: "var(--text-muted)" }}>&lt;</span>
           {portfolioData.personal.name.split(" ")[0]}
-          <span className="text-[#52525B]"> /&gt;</span>
+          <span style={{ color: "var(--text-muted)" }}> /&gt;</span>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -42,45 +44,61 @@ export default function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              className="relative text-sm font-medium text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors duration-200 group"
+              className="relative text-sm font-medium transition-colors duration-200 group"
+              style={{ color: "var(--text-secondary)" }}
+              onMouseEnter={e => e.target.style.color = "var(--text-primary)"}
+              onMouseLeave={e => e.target.style.color = "var(--text-secondary)"}
             >
               {link.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#7C3AED] transition-all duration-300 group-hover:w-full" />
+              <span
+                className="absolute -bottom-1 left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full"
+                style={{ backgroundColor: "var(--accent)" }}
+              />
             </a>
           ))}
+
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-lg text-[#A1A1AA] hover:text-[#FAFAFA] hover:bg-[#27272A] transition-all duration-200"
+            className="p-2 rounded-lg transition-all duration-200"
+            style={{ color: "var(--text-secondary)", border: "1px solid var(--border)" }}
             aria-label="Toggle theme"
           >
-            {isDark ? <HiSun size={18} /> : <HiMoon size={18} />}
+            {isDark
+              ? <HiSun size={17} style={{ color: "var(--accent-light)" }} />
+              : <HiMoon size={17} style={{ color: "var(--accent)" }} />
+            }
           </button>
         </div>
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
-          aria-label="Toggle menu"
+          className="md:hidden p-2 transition-colors"
+          style={{ color: "var(--text-secondary)" }}
         >
           {menuOpen ? <HiX size={22} /> : <HiMenuAlt3 size={22} />}
         </button>
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-[#0F0F12]/95 backdrop-blur-md border-t border-[#27272A] px-6 py-6 flex flex-col gap-5">
+        <div
+          className="md:hidden px-6 py-6 flex flex-col gap-5 border-t backdrop-blur-md"
+          style={{ backgroundColor: "var(--bg-secondary)", borderColor: "var(--border)" }}
+        >
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="text-base font-medium text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
+              className="text-base font-medium transition-colors"
+              style={{ color: "var(--text-secondary)" }}
             >
               {link.label}
             </a>
           ))}
           <button
             onClick={toggleTheme}
-            className="self-start flex items-center gap-2 text-sm text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors"
+            className="self-start flex items-center gap-2 text-sm transition-colors"
+            style={{ color: "var(--text-secondary)" }}
           >
             {isDark ? <HiSun size={16} /> : <HiMoon size={16} />}
             {isDark ? "Light Mode" : "Dark Mode"}
