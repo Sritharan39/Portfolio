@@ -1,4 +1,5 @@
 import { ThemeProvider } from "./contexts/ThemeContext";
+import ScrollProgress from "./components/ScrollProgress";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -16,6 +17,7 @@ function App() {
   return (
     <ThemeProvider>
       <div className="bg-skin-base min-h-screen font-sans transition-colors duration-300">
+        <ScrollProgress />
         <Navbar />
         <Hero />
         <About />

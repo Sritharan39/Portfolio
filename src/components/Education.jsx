@@ -1,22 +1,24 @@
 import { portfolioData } from "../data/portfolioData";
 import { HiAcademicCap } from "react-icons/hi";
 import { FiCalendar, FiAward } from "react-icons/fi";
+import SectionHeader from "./SectionHeader";
+import { motion } from "framer-motion";
 
 export default function Education() {
   return (
     <section id="education" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-primary)" }}>
       <div className="max-w-6xl mx-auto px-6">
-        <div className="mb-16">
-          <p className="font-mono text-xs tracking-widest uppercase mb-3" style={{ color: "var(--accent)" }}>// 02. Education</p>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>Education</h2>
-        </div>
+        <SectionHeader index="02" title="Education" />
         <div className="flex flex-col gap-5">
           {portfolioData.education.map((edu, i) => (
-            <div key={i} className="flex gap-5 p-6 rounded-xl border transition-all duration-300"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.boxShadow = "0 0 24px var(--accent-glow)"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.boxShadow = "none"; }}
-            >
+            <motion.div key={i}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              whileHover={{ x: 6 }}
+              className="flex gap-5 p-6 rounded-xl border transition-all duration-300 card-glow"
+              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
               <div className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border"
                 style={{ backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
                 <HiAcademicCap size={22} style={{ color: "var(--accent)" }} />
@@ -29,7 +31,7 @@ export default function Education() {
                     <FiCalendar size={11} /> {edu.year}
                   </div>
                 </div>
-                <p className="font-medium text-sm mb-2" style={{ color: "var(--accent-light)" }}>{edu.institution}</p>
+                <p className="font-medium text-sm mb-2 gradient-text">{edu.institution}</p>
                 {edu.grade && (
                   <div className="flex items-center gap-1.5 text-sm" style={{ color: "var(--text-muted)" }}>
                     <FiAward size={13} style={{ color: "var(--accent)" }} />
@@ -37,7 +39,7 @@ export default function Education() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
