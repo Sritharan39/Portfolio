@@ -12,10 +12,10 @@ const contactLinks = [
   { icon: <FiLinkedin size={18} />, label: "LinkedIn", value: "linkedin.com/in/YOUR_PROFILE", href: portfolioData.social.linkedin },
 ];
 
-// ⚠️ Replace these with your own EmailJS credentials from emailjs.com (free)
-const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";
+// ✅ EmailJS credentials configured
+const EMAILJS_SERVICE_ID  = "service_mv8nkns";
+const EMAILJS_TEMPLATE_ID = "template_nc37rst";
+const EMAILJS_PUBLIC_KEY  = "ZDl00oXiNV0a4n4yn";
 
 export default function Contact() {
   const formRef = useRef();
@@ -71,8 +71,8 @@ export default function Contact() {
           <AnimatedSection delay={0.2}>
             <div className="p-8 rounded-xl border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
               <p className="text-xs font-mono mb-6 p-3 rounded-lg border"
-                style={{ color: "var(--accent)", backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
-                ⚠️ To activate real email sending, set up EmailJS at emailjs.com (free) and replace the credentials in Contact.jsx
+                style={{ color: "#34D399", backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
+                ✅ EmailJS is configured and ready! Your messages will be sent to your email.
               </p>
               <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {[
