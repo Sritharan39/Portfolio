@@ -17,22 +17,83 @@ const EMAILJS_SERVICE_ID  = "service_mv8nkns";
 const EMAILJS_TEMPLATE_ID = "template_nc37rst";
 const EMAILJS_PUBLIC_KEY  = "ZDl00oXiNV0a4n4yn";
 
+// Email validation regex
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Validation rules for each field
+const validateField = (name, value) => {
+  switch (name) {
+    case "from_name":
+      if (!value.trim()) return "Name is required";
+      if (value.trim().length < 2) return "Name must be at least 2 characters";
+      if (value.trim().length > 50) return "Name must be less than 50 characters";
+      return "";
+    
+    case "from_email":
+      if (!value.trim()) return "Email is required";
+      if (!validateEmail(value.trim())) return "Please enter a valid email address";
+      return "";
+    
+    case "subject":
+      if (!value.trim()) return "Subject is required";
+      if (value.trim().length < 3) return "Subject must be at least 3 characters";
+      if (value.trim().length > 100) return "Subject must be less than 100 characters";
+      return "";
+    
+    case "message":
+      if (!value.trim()) return "Message is required";
+      if (value.trim().length < 10) return "Message must be at least 10 characters";
+      if (value.trim().length > 1000) return "Message must be less than 1000 characters";
+      return "";
+    
+    default:
+      return "";
+  }
+};
+
 export default function Contact() {
   const formRef = useRef();
   const [status, setStatus] = useState(""); // idle | sending | success | error
   const [form, setForm] = useState({ from_name: "", from_email: "", subject: "", message: "" });
+  const [errors, setErrors] = useState({ from_name: "", from_email: "", subject: "", message: "" });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    
+    // Validate field in real-time and update error state
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.from_name || !form.from_email || !form.subject || !form.message) { setStatus("error"); return; }
+    
+    // Validate all fields
+    const newErrors = {};
+    Object.keys(form).forEach((field) => {
+      const error = validateField(field, form[field]);
+      newErrors[field] = error;
+    });
+    setErrors(newErrors);
+    
+    // Check if there are any errors
+    const hasErrors = Object.values(newErrors).some((error) => error !== "");
+    if (hasErrors) {
+      setStatus("error");
+      setTimeout(() => setStatus(""), 5000);
+      return;
+    }
 
     setStatus("sending");
     try {
       await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current, EMAILJS_PUBLIC_KEY);
       setStatus("success");
       setForm({ from_name: "", from_email: "", subject: "", message: "" });
+      setErrors({ from_name: "", from_email: "", subject: "", message: "" });
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -87,10 +148,19 @@ export default function Contact() {
                     <input type={field.type} name={field.name} value={form[field.name]} onChange={handleChange}
                       placeholder={field.placeholder}
                       className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-all duration-200"
-                      style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
-                      onFocus={e => e.target.style.borderColor = "var(--accent)"}
-                      onBlur={e => e.target.style.borderColor = "var(--border)"}
+                      style={{ 
+                        backgroundColor: "var(--bg-secondary)", 
+                        border: errors[field.name] ? "1px solid #F87171" : "1px solid var(--border)", 
+                        color: "var(--text-primary)" 
+                      }}
+                      onFocus={e => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--accent)"}
+                      onBlur={e => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--border)"}
                     />
+                    {errors[field.name] && (
+                      <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
+                        ✗ {errors[field.name]}
+                      </p>
+                    )}
                   </div>
                 ))}
                 <div>
@@ -98,10 +168,19 @@ export default function Contact() {
                   <textarea name="message" value={form.message} onChange={handleChange}
                     placeholder="Your message..." rows={5}
                     className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none resize-none transition-all duration-200"
-                    style={{ backgroundColor: "var(--bg-secondary)", border: "1px solid var(--border)", color: "var(--text-primary)" }}
-                    onFocus={e => e.target.style.borderColor = "var(--accent)"}
-                    onBlur={e => e.target.style.borderColor = "var(--border)"}
+                    style={{ 
+                      backgroundColor: "var(--bg-secondary)", 
+                      border: errors.message ? "1px solid #F87171" : "1px solid var(--border)", 
+                      color: "var(--text-primary)" 
+                    }}
+                    onFocus={e => e.target.style.borderColor = errors.message ? "#F87171" : "var(--accent)"}
+                    onBlur={e => e.target.style.borderColor = errors.message ? "#F87171" : "var(--border)"}
                   />
+                  {errors.message && (
+                    <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
+                      ✗ {errors.message}
+                    </p>
+                  )}
                 </div>
 
                 {status === "success" && (
@@ -113,7 +192,10 @@ export default function Contact() {
                 {status === "error" && (
                   <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2 text-sm font-mono" style={{ color: "#F87171" }}>
-                    <FiAlertCircle size={15} /> {!form.from_name || !form.from_email || !form.subject || !form.message ? "Please fill all fields." : "Something went wrong. Try again."}
+                    <FiAlertCircle size={15} /> 
+                    {Object.values(errors).filter(e => e).length > 0 
+                      ? Object.values(errors).find(e => e) 
+                      : "Something went wrong. Try again."}
                   </motion.div>
                 )}
 
