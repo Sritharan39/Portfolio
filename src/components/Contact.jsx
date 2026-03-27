@@ -20,19 +20,19 @@ const EMAILJS_PUBLIC_KEY  = "ZDl00oXiNV0a4n4yn";
 export default function Contact() {
   const formRef = useRef();
   const [status, setStatus] = useState(""); // idle | sending | success | error
-  const [form, setForm] = useState({ user_name: "", user_email: "", message: "" });
+  const [form, setForm] = useState({ from_name: "", from_email: "", message: "" });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.user_name || !form.user_email || !form.message) { setStatus("error"); return; }
+    if (!form.from_name || !form.from_email || !form.message) { setStatus("error"); return; }
 
     setStatus("sending");
     try {
       await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current, EMAILJS_PUBLIC_KEY);
       setStatus("success");
-      setForm({ user_name: "", user_email: "", message: "" });
+      setForm({ from_name: "", from_email: "", message: "" });
     } catch (err) {
       console.error(err);
       setStatus("error");
@@ -76,8 +76,8 @@ export default function Contact() {
               </p>
               <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
                 {[
-                  { name: "user_name", label: "Name", type: "text", placeholder: "Your Name" },
-                  { name: "user_email", label: "Email", type: "email", placeholder: "your@email.com" },
+                  { name: "from_name", label: "Name", type: "text", placeholder: "Your Name" },
+                  { name: "from_email", label: "Email", type: "email", placeholder: "your@email.com" },
                 ].map((field) => (
                   <div key={field.name}>
                     <label className="block text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--text-muted)" }}>
@@ -112,7 +112,7 @@ export default function Contact() {
                 {status === "error" && (
                   <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2 text-sm font-mono" style={{ color: "#F87171" }}>
-                    <FiAlertCircle size={15} /> {!form.user_name || !form.user_email || !form.message ? "Please fill all fields." : "Something went wrong. Try again."}
+                    <FiAlertCircle size={15} /> {!form.from_name || !form.from_email || !form.message ? "Please fill all fields." : "Something went wrong. Try again."}
                   </motion.div>
                 )}
 
