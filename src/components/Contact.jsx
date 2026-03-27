@@ -12,41 +12,37 @@ const contactLinks = [
   { icon: <FiLinkedin size={18} />, label: "LinkedIn", value: "linkedin.com/in/YOUR_PROFILE", href: portfolioData.social.linkedin },
 ];
 
-// ✅ EmailJS credentials configured
-const EMAILJS_SERVICE_ID  = "service_mv8nkns";
+const EMAILJS_SERVICE_ID = "service_mv8nkns";
 const EMAILJS_TEMPLATE_ID = "template_nc37rst";
-const EMAILJS_PUBLIC_KEY  = "ZDl00oXiNV0a4n4yn";
+const EMAILJS_PUBLIC_KEY = "ZDl00oXiNV0a4n4yn";
 
-// Email validation regex
-const validateEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-// Validation rules for each field
 const validateField = (name, value) => {
+  const trimmed = value.trim();
+  
   switch (name) {
     case "from_name":
-      if (!value.trim()) return "Name is required";
-      if (value.trim().length < 2) return "Name must be at least 2 characters";
-      if (value.trim().length > 50) return "Name must be less than 50 characters";
+      if (!trimmed) return "Name is required";
+      if (trimmed.length < 2) return "Name must be at least 2 characters";
+      if (trimmed.length > 50) return "Name must be less than 50 characters";
       return "";
     
     case "from_email":
-      if (!value.trim()) return "Email is required";
-      if (!validateEmail(value.trim())) return "Please enter a valid email address";
+      if (!trimmed) return "Email is required";
+      if (!validateEmail(trimmed)) return "Please enter a valid email address";
       return "";
     
     case "subject":
-      if (!value.trim()) return "Subject is required";
-      if (value.trim().length < 3) return "Subject must be at least 3 characters";
-      if (value.trim().length > 100) return "Subject must be less than 100 characters";
+      if (!trimmed) return "Subject is required";
+      if (trimmed.length < 3) return "Subject must be at least 3 characters";
+      if (trimmed.length > 100) return "Subject must be less than 100 characters";
       return "";
     
     case "message":
-      if (!value.trim()) return "Message is required";
-      if (value.trim().length < 10) return "Message must be at least 10 characters";
-      if (value.trim().length > 1000) return "Message must be less than 1000 characters";
+      if (!trimmed) return "Message is required";
+      if (trimmed.length < 10) return "Message must be at least 10 characters";
+      if (trimmed.length > 1000) return "Message must be less than 1000 characters";
       return "";
     
     default:
@@ -56,15 +52,13 @@ const validateField = (name, value) => {
 
 export default function Contact() {
   const formRef = useRef();
-  const [status, setStatus] = useState(""); // idle | sending | success | error
+  const [status, setStatus] = useState("");
   const [form, setForm] = useState({ from_name: "", from_email: "", subject: "", message: "" });
   const [errors, setErrors] = useState({ from_name: "", from_email: "", subject: "", message: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    
-    // Validate field in real-time and update error state
     const error = validateField(name, value);
     setErrors({ ...errors, [name]: error });
   };
@@ -72,15 +66,12 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate all fields
     const newErrors = {};
     Object.keys(form).forEach((field) => {
-      const error = validateField(field, form[field]);
-      newErrors[field] = error;
+      newErrors[field] = validateField(field, form[field]);
     });
     setErrors(newErrors);
     
-    // Check if there are any errors
     const hasErrors = Object.values(newErrors).some((error) => error !== "");
     if (hasErrors) {
       setStatus("error");
@@ -95,11 +86,17 @@ export default function Contact() {
       setForm({ from_name: "", from_email: "", subject: "", message: "" });
       setErrors({ from_name: "", from_email: "", subject: "", message: "" });
     } catch (err) {
-      console.error(err);
+      console.error("EmailJS Error:", err);
       setStatus("error");
     }
     setTimeout(() => setStatus(""), 5000);
   };
+
+  const fields = [
+    { name: "from_name", label: "Name", type: "text", placeholder: "Your Name" },
+    { name: "from_email", label: "Email", type: "email", placeholder: "your@email.com" },
+    { name: "subject", label: "Subject", type: "text", placeholder: "What is this about?" },
+  ];
 
   return (
     <section id="contact" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-secondary)" }}>
@@ -131,21 +128,21 @@ export default function Contact() {
 
           <AnimatedSection delay={0.2}>
             <div className="p-8 rounded-xl border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-              <p className="text-xs font-mono mb-6 p-3 rounded-lg border"
-                style={{ color: "#34D399", backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
+              <p className="text-xs font-mono mb-6 p-3 rounded-lg border" style={{ color: "#34D399", backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
                 ✅ EmailJS is configured and ready! Your messages will be sent to your email.
               </p>
+              
               <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {[
-                  { name: "from_name", label: "Name", type: "text", placeholder: "Your Name" },
-                  { name: "from_email", label: "Email", type: "email", placeholder: "your@email.com" },
-                  { name: "subject", label: "Subject", type: "text", placeholder: "What is this about?" },
-                ].map((field) => (
+                {fields.map((field) => (
                   <div key={field.name}>
                     <label className="block text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--text-muted)" }}>
                       {field.label}
                     </label>
-                    <input type={field.type} name={field.name} value={form[field.name]} onChange={handleChange}
+                    <input 
+                      type={field.type} 
+                      name={field.name} 
+                      value={form[field.name]} 
+                      onChange={handleChange}
                       placeholder={field.placeholder}
                       className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-all duration-200"
                       style={{ 
@@ -153,8 +150,8 @@ export default function Contact() {
                         border: errors[field.name] ? "1px solid #F87171" : "1px solid var(--border)", 
                         color: "var(--text-primary)" 
                       }}
-                      onFocus={e => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--accent)"}
-                      onBlur={e => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--border)"}
+                      onFocus={(e) => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--accent)"}
+                      onBlur={(e) => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--border)"}
                     />
                     {errors[field.name] && (
                       <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
@@ -163,18 +160,23 @@ export default function Contact() {
                     )}
                   </div>
                 ))}
+
                 <div>
                   <label className="block text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--text-muted)" }}>Message</label>
-                  <textarea name="message" value={form.message} onChange={handleChange}
-                    placeholder="Your message..." rows={5}
+                  <textarea 
+                    name="message" 
+                    value={form.message} 
+                    onChange={handleChange}
+                    placeholder="Your message..." 
+                    rows={5}
                     className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none resize-none transition-all duration-200"
                     style={{ 
                       backgroundColor: "var(--bg-secondary)", 
                       border: errors.message ? "1px solid #F87171" : "1px solid var(--border)", 
                       color: "var(--text-primary)" 
                     }}
-                    onFocus={e => e.target.style.borderColor = errors.message ? "#F87171" : "var(--accent)"}
-                    onBlur={e => e.target.style.borderColor = errors.message ? "#F87171" : "var(--border)"}
+                    onFocus={(e) => e.target.style.borderColor = errors.message ? "#F87171" : "var(--accent)"}
+                    onBlur={(e) => e.target.style.borderColor = errors.message ? "#F87171" : "var(--border)"}
                   />
                   {errors.message && (
                     <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
@@ -189,19 +191,22 @@ export default function Contact() {
                     <FiCheckCircle size={15} /> Message sent! I'll reply within 24 hours.
                   </motion.div>
                 )}
+
                 {status === "error" && (
                   <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                     className="flex items-center gap-2 text-sm font-mono" style={{ color: "#F87171" }}>
                     <FiAlertCircle size={15} /> 
-                    {Object.values(errors).filter(e => e).length > 0 
-                      ? Object.values(errors).find(e => e) 
-                      : "Something went wrong. Try again."}
+                    {Object.values(errors).find(e => e) || "Something went wrong. Try again."}
                   </motion.div>
                 )}
 
-                <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                <motion.button 
+                  type="submit" 
+                  whileHover={{ scale: 1.02 }} 
+                  whileTap={{ scale: 0.98 }}
                   disabled={status === "sending"}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-lg text-white font-medium text-sm btn-primary disabled:opacity-60">
+                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-lg text-white font-medium text-sm btn-primary disabled:opacity-60"
+                >
                   {status === "sending"
                     ? <><FiLoader size={15} className="animate-spin" /> Sending...</>
                     : <><FiSend size={15} /> Send Message</>
