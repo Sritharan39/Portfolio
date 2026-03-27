@@ -12,7 +12,7 @@ const contactLinks = [
   { icon: <FiLinkedin size={18} />, label: "LinkedIn", value: "linkedin.com/in/YOUR_PROFILE", href: portfolioData.social.linkedin },
 ];
 
-const EMAILJS_SERVICE_ID = "service_mv8nkns";
+const EMAILJS_SERVICE_ID = "service_sryqa5b";
 const EMAILJS_TEMPLATE_ID = "template_nc37rst";
 const EMAILJS_PUBLIC_KEY = "ZDl00oXiNV0a4n4yn";
 
