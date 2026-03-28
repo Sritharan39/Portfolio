@@ -1,131 +1,168 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { portfolioData } from "../data/portfolioData";
-import { FiGithub, FiLinkedin, FiMail, FiDownload, FiArrowRight } from "react-icons/fi";
-
-const roles = ["Software Developer", "LIMS Specialist", "Full Stack Developer", "SampleManager Expert"];
+import { FiArrowDown, FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 export default function Hero() {
-  const [roleIndex, setRoleIndex] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const [typing, setTyping] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const target = roles[roleIndex];
-    if (typing) {
-      if (displayed.length < target.length) {
-        const t = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), 60);
-        return () => clearTimeout(t);
-      } else {
-        const t = setTimeout(() => setTyping(false), 1800);
-        return () => clearTimeout(t);
-      }
-    } else {
-      if (displayed.length > 0) {
-        const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35);
-        return () => clearTimeout(t);
-      } else {
-        setRoleIndex((i) => (i + 1) % roles.length);
-        setTyping(true);
-      }
-    }
-  }, [displayed, typing, roleIndex]);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const socialLinks = [
+    { icon: <FiGithub size={20} />, href: portfolioData.social.github, delay: 0.2 },
+    { icon: <FiLinkedin size={20} />, href: portfolioData.social.linkedin, delay: 0.3 },
+    { icon: <FiMail size={20} />, href: portfolioData.social.email, delay: 0.4 },
+  ];
 
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden"
-      style={{ backgroundColor: "var(--bg-primary)" }}>
-
-      {/* Animated gradient orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[15%] left-[20%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.07] float"
-          style={{ background: "radial-gradient(circle, var(--accent), transparent)" }} />
-        <div className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-[0.06] float"
-          style={{ background: "radial-gradient(circle, var(--accent2), transparent)", animationDelay: "2s" }} />
-        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-[80px] opacity-[0.04] float"
-          style={{ background: "radial-gradient(circle, #a855f7, transparent)", animationDelay: "4s" }} />
-        <div className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: "radial-gradient(circle, var(--accent) 1px, transparent 1px)",
-            backgroundSize: "44px 44px",
-          }} />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20" style={{ backgroundColor: "var(--bg-primary)" }}>
+      {/* Animated Background Gradients */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          animate={{ y: scrollY * 0.5 }}
+          className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl opacity-20"
+          style={{ background: "var(--accent)", filter: "blur(100px)" }}
+        />
+        <motion.div
+          animate={{ y: scrollY * -0.3 }}
+          className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl opacity-20"
+          style={{ background: "var(--accent)", filter: "blur(100px)" }}
+        />
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8 border"
-            style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-            <span className="w-2 h-2 rounded-full animate-pulse"
-              style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }} />
-            <span className="font-mono text-xs tracking-widest" style={{ color: "var(--text-muted)" }}>
-              AVAILABLE FOR OPPORTUNITIES
+      {/* Main Content */}
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        {/* Greeting Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-6 inline-block">
+          <span
+            className="text-xs font-mono px-4 py-2 rounded-full border backdrop-blur-md"
+            style={{
+              background: "rgba(var(--accent-rgb), 0.1)",
+              borderColor: "var(--accent)",
+              color: "var(--accent)",
+            }}>
+            👋 Welcome to my portfolio
+          </span>
+        </motion.div>
+
+        {/* Main Heading - Bold & Large */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="mb-6">
+          <h1 className="text-6xl md:text-8xl font-bold leading-tight mb-4" style={{ color: "var(--text-primary)" }}>
+            <span className="block">Full-Stack</span>
+            <span
+              className="block bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent"
+              style={{ backgroundClip: "text" }}>
+              Developer
             </span>
-          </div>
+          </h1>
+          <p className="text-xl md:text-2xl font-light mt-4" style={{ color: "var(--text-secondary)" }}>
+            Crafting elegant solutions for complex problems
+          </p>
         </motion.div>
 
-        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-5 tracking-tight leading-none"
-          style={{ color: "var(--text-primary)" }}>
-          {portfolioData.personal.name}
-        </motion.h1>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex items-center justify-center gap-3 mb-6 h-10">
-          <div className="h-[1px] w-14"
-            style={{ background: "linear-gradient(to right, transparent, var(--accent))" }} />
-          <h2 className="font-mono text-sm md:text-base tracking-widest gradient-text-animate">
-            {displayed}<span className="animate-pulse">|</span>
-          </h2>
-          <div className="h-[1px] w-14"
-            style={{ background: "linear-gradient(to left, transparent, var(--accent))" }} />
+        {/* Subheading with Animated Elements */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="mb-8">
+          <p className="text-sm md:text-base mb-6" style={{ color: "var(--text-muted)" }}>
+            Specializing in <span style={{ color: "var(--accent)" }}>LIMS Systems</span> • <span style={{ color: "var(--accent)" }}>React</span> • <span style={{ color: "var(--accent)" }}>Full-Stack Development</span>
+          </p>
         </motion.div>
 
-        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-10"
-          style={{ color: "var(--text-secondary)" }}>
-          {portfolioData.personal.bio}
-        </motion.p>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <a href="#projects"
-            className="group flex items-center gap-2 px-8 py-3 rounded-lg text-white font-medium text-sm btn-primary">
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6 }}
+          className="flex flex-col md:flex-row gap-4 justify-center mb-12">
+          <motion.a
+            href="#projects"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-8 py-4 rounded-lg font-semibold text-white transition-all"
+            style={{ background: "var(--accent)", boxShadow: "0 10px 30px rgba(var(--accent-rgb), 0.3)" }}>
             View My Work
-            <FiArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-200" />
-          </a>
-          <a href={portfolioData.personal.resumeUrl} download
-            className="flex items-center gap-2 px-8 py-3 rounded-lg font-medium text-sm transition-all duration-200 border hover:scale-105"
-            style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = "var(--accent)"}
-            onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-          >
-            <FiDownload size={15} /> Download Resume
-          </a>
+          </motion.a>
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.05, y: -2, borderColor: "var(--accent)" }}
+            whileTap={{ scale: 0.95 }}
+            className="px-8 py-4 rounded-lg font-semibold border-2 transition-all"
+            style={{ borderColor: "var(--border)", color: "var(--text-primary)" }}>
+            Get In Touch
+          </motion.a>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex items-center justify-center gap-6">
-          {[
-            { href: portfolioData.social.github, icon: <FiGithub size={20} />, label: "GitHub" },
-            { href: portfolioData.social.linkedin, icon: <FiLinkedin size={20} />, label: "LinkedIn" },
-            { href: portfolioData.social.email, icon: <FiMail size={20} />, label: "Email" },
-          ].map((item, i) => (
-            <a key={i} href={item.href} target="_blank" rel="noreferrer"
-              className="flex items-center gap-2 text-sm font-mono transition-all duration-200 hover:scale-110"
-              style={{ color: "var(--text-muted)" }}
-              onMouseEnter={e => e.currentTarget.style.color = "var(--accent)"}
-              onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>
-              {item.icon}
-              <span className="hidden sm:block">{item.label}</span>
-            </a>
+        {/* Social Links */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="flex justify-center gap-6">
+          {socialLinks.map((link, i) => (
+            <motion.a
+              key={i}
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: link.delay }}
+              whileHover={{ scale: 1.2, y: -5 }}
+              className="w-12 h-12 rounded-lg border flex items-center justify-center transition-all"
+              style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "var(--accent)";
+                e.currentTarget.style.color = "var(--accent)";
+                e.currentTarget.style.background = "rgba(var(--accent-rgb), 0.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.color = "var(--text-muted)";
+                e.currentTarget.style.background = "transparent";
+              }}>
+              {link.icon}
+            </motion.a>
           ))}
         </motion.div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <span className="font-mono text-xs tracking-widest" style={{ color: "var(--text-muted)" }}>SCROLL</span>
-        <div className="w-[1px] h-10"
-          style={{ background: "linear-gradient(to bottom, var(--accent), transparent)" }} />
-      </div>
+      {/* Scroll Down Indicator */}
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+        <a href="#about" className="flex flex-col items-center gap-2 cursor-pointer">
+          <span className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>Scroll to explore</span>
+          <FiArrowDown size={20} style={{ color: "var(--accent)" }} />
+        </a>
+      </motion.div>
+
+      {/* Parallax Shapes */}
+      <motion.div
+        animate={{ y: scrollY * 0.7, rotate: scrollY * 0.1 }}
+        className="absolute top-1/4 right-10 w-40 h-40 rounded-3xl opacity-10"
+        style={{ background: "var(--accent)" }}
+      />
+      <motion.div
+        animate={{ y: scrollY * -0.5, rotate: scrollY * -0.1 }}
+        className="absolute bottom-1/4 left-10 w-40 h-40 rounded-3xl opacity-10"
+        style={{ background: "var(--accent)" }}
+      />
     </section>
   );
 }

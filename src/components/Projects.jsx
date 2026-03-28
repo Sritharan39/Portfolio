@@ -1,122 +1,165 @@
 import { portfolioData } from "../data/portfolioData";
-import { FiGithub, FiExternalLink, FiStar } from "react-icons/fi";
-import SectionHeader from "./SectionHeader";
+import { FiGithub, FiExternalLink, FiCode } from "react-icons/fi";
 import { motion } from "framer-motion";
-
-const statusColors = {
-  "In Progress": { color: "#FBBF24", bg: "rgba(251,191,36,0.08)", border: "rgba(251,191,36,0.2)" },
-  "Completed": { color: "#34D399", bg: "rgba(52,211,153,0.08)", border: "rgba(52,211,153,0.2)" },
-  "Live": { color: "#60A5FA", bg: "rgba(96,165,250,0.08)", border: "rgba(96,165,250,0.2)" },
-  "Planned": { color: "#a78bfa", bg: "rgba(167,139,250,0.08)", border: "rgba(167,139,250,0.2)" },
-};
-
-function StatusBadge({ status }) {
-  const s = statusColors[status] || { color: "var(--text-muted)", bg: "transparent", border: "var(--border)" };
-  return (
-    <span className="font-mono text-xs px-3 py-1 rounded-full border"
-      style={{ color: s.color, backgroundColor: s.bg, borderColor: s.border }}>{status}</span>
-  );
-}
+import SectionHeader from "./SectionHeader";
+import AnimatedSection from "./AnimatedSection";
 
 export default function Projects() {
-  const featured = portfolioData.projects.filter((p) => p.featured);
-  const rest = portfolioData.projects.filter((p) => !p.featured);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
 
   return (
-    <section id="projects" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-secondary)" }}>
+    <section id="projects" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-primary)" }}>
       <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader index="05" title="Projects" />
+        <SectionHeader index="06" title="Featured Projects" />
 
-        {featured.map((project, i) => (
-          <motion.div key={i}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="mb-6 p-8 rounded-xl border relative overflow-hidden transition-all duration-300 card-glow"
-            style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-hover)" }}>
-            <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl pointer-events-none opacity-[0.06]"
-              style={{ background: "radial-gradient(circle, var(--accent), var(--accent2))" }} />
-            <div className="relative z-10">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 font-mono text-xs gradient-text">
-                    <FiStar size={13} style={{ fill: "var(--accent)", color: "var(--accent)" }} /> Featured
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {portfolioData.projects.map((project, i) => (
+            <AnimatedSection key={i} delay={i * 0.1}>
+              <motion.div
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+                className="group h-full rounded-2xl border overflow-hidden transition-all duration-300"
+                style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
+                {/* Project Image/Background */}
+                <div
+                  className="h-48 relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-pink-500/10"
+                  style={{
+                    backgroundImage: `linear-gradient(135deg, var(--accent-glow), rgba(var(--accent-rgb), 0.05))`,
+                  }}>
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}>
+                    <FiCode size={64} style={{ color: "var(--accent)", opacity: 0.3 }} />
+                  </motion.div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  {/* Title */}
+                  <h3 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+                    {project.name}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-sm mb-4 line-clamp-2" style={{ color: "var(--text-secondary)" }}>
+                    {project.desc}
+                  </p>
+
+                  {/* Tech Stack */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.tech.slice(0, 3).map((tech, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs px-3 py-1 rounded-full"
+                        style={{
+                          backgroundColor: "var(--accent-glow)",
+                          color: "var(--accent)",
+                        }}>
+                        {tech}
+                      </span>
+                    ))}
+                    {project.tech.length > 3 && (
+                      <span
+                        className="text-xs px-3 py-1 rounded-full"
+                        style={{
+                          backgroundColor: "var(--accent-glow)",
+                          color: "var(--accent)",
+                        }}>
+                        +{project.tech.length - 3}
+                      </span>
+                    )}
                   </div>
-                  <StatusBadge status={project.status} />
-                </div>
-                <div className="flex gap-3">
-                  {project.githubUrl && (
-                    <motion.a whileHover={{ scale: 1.05 }} href={project.githubUrl} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-xs px-4 py-2 rounded-lg border transition-all"
-                      style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
-                      onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; }}
-                      onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-muted)"; }}>
-                      <FiGithub size={13} /> GitHub
-                    </motion.a>
-                  )}
-                  {project.liveUrl && (
-                    <motion.a whileHover={{ scale: 1.05 }} href={project.liveUrl} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-1.5 font-mono text-xs px-4 py-2 rounded-lg text-white transition-all btn-primary">
-                      <FiExternalLink size={13} /> Live Demo
-                    </motion.a>
-                  )}
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-3" style={{ color: "var(--text-primary)" }}>{project.name}</h3>
-              <p className="leading-relaxed mb-6" style={{ color: "var(--text-secondary)" }}>{project.desc}</p>
-              <div className="flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg border"
-                    style={{ backgroundColor: "var(--accent-glow)", color: "var(--accent-light)", borderColor: "var(--border-hover)" }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ))}
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {rest.map((project, i) => (
-            <motion.div key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{ y: -6 }}
-              className="p-6 rounded-xl border transition-all duration-300 card-glow"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-              <div className="flex items-center justify-between gap-3 mb-4">
-                <StatusBadge status={project.status} />
-                <div className="flex gap-3">
-                  {project.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" rel="noreferrer"
-                      className="transition-colors" style={{ color: "var(--text-muted)" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "var(--accent)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>
-                      <FiGithub size={17} />
-                    </a>
-                  )}
-                  {project.liveUrl && (
-                    <a href={project.liveUrl} target="_blank" rel="noreferrer"
-                      className="transition-colors" style={{ color: "var(--text-muted)" }}
-                      onMouseEnter={e => e.currentTarget.style.color = "var(--accent)"}
-                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}>
-                      <FiExternalLink size={17} />
-                    </a>
-                  )}
+                  {/* Status Badge */}
+                  <div className="flex items-center justify-between mb-6">
+                    <span
+                      className="text-xs font-mono px-3 py-1 rounded-lg"
+                      style={{
+                        backgroundColor: project.status === "Completed" ? "rgba(52, 211, 153, 0.2)" : "rgba(249, 115, 22, 0.2)",
+                        color: project.status === "Completed" ? "#34D399" : "#F97316",
+                      }}>
+                      {project.status}
+                    </span>
+                    {project.featured && (
+                      <span className="text-xs font-mono" style={{ color: "var(--accent)" }}>
+                        ⭐ Featured
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Links */}
+                  <div className="flex gap-4 pt-4 border-t" style={{ borderColor: "var(--border)" }}>
+                    {project.githubUrl && (
+                      <motion.a
+                        href={project.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        whileHover={{ scale: 1.1 }}
+                        className="flex items-center gap-2 text-sm transition-colors"
+                        style={{ color: "var(--text-muted)" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}>
+                        <FiGithub size={16} /> Code
+                      </motion.a>
+                    )}
+                    {project.liveUrl && (
+                      <motion.a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        whileHover={{ scale: 1.1 }}
+                        className="flex items-center gap-2 text-sm transition-colors ml-auto"
+                        style={{ color: "var(--text-muted)" }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}>
+                        Live Demo <FiExternalLink size={16} />
+                      </motion.a>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <h3 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>{project.name}</h3>
-              <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-secondary)" }}>{project.desc}</p>
-              <div className="flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <span key={t} className="font-mono text-xs px-3 py-1 rounded-lg border"
-                    style={{ backgroundColor: "var(--bg-secondary)", color: "var(--text-muted)", borderColor: "var(--border)" }}>{t}</span>
-                ))}
-              </div>
-            </motion.div>
+              </motion.div>
+            </AnimatedSection>
           ))}
-        </div>
+        </motion.div>
+
+        {/* View All Projects Link */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-center">
+          <motion.a
+            href="#"
+            whileHover={{ x: 4 }}
+            className="inline-flex items-center gap-2 text-sm font-mono"
+            style={{ color: "var(--accent)" }}>
+            View More Projects → 
+          </motion.a>
+        </motion.div>
       </div>
     </section>
   );
