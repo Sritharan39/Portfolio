@@ -1,54 +1,98 @@
 import { portfolioData } from "../data/portfolioData";
-import { FiMonitor, FiServer, FiDatabase, FiTool, FiActivity } from "react-icons/fi";
-import SectionHeader from "./SectionHeader";
 import { motion } from "framer-motion";
-
-const skillCategories = [
-  { key: "frontend", label: "Frontend", icon: <FiMonitor size={15} /> },
-  { key: "backend", label: "Backend", icon: <FiServer size={15} /> },
-  { key: "database", label: "Database", icon: <FiDatabase size={15} /> },
-  { key: "tools", label: "Tools & DevOps", icon: <FiTool size={15} /> },
-  { key: "domain", label: "Domain Knowledge", icon: <FiActivity size={15} /> },
-];
+import SectionHeader from "./SectionHeader";
+import AnimatedSection from "./AnimatedSection";
 
 export default function Skills() {
+  const skillCategories = [
+    {
+      title: "Frontend",
+      skills: ["React.js", "Tailwind CSS", "JavaScript", "HTML5", "CSS3", "Framer Motion"],
+      gradient: "from-purple-500/20 to-pink-500/20",
+    },
+    {
+      title: "Backend",
+      skills: ["Node.js", "Express.js", "C#", ".NET", "REST APIs", "JWT Auth"],
+      gradient: "from-blue-500/20 to-cyan-500/20",
+    },
+    {
+      title: "Database",
+      skills: ["PostgreSQL", "SQL Server", "MySQL", "Database Design", "Query Optimization"],
+      gradient: "from-green-500/20 to-emerald-500/20",
+    },
+    {
+      title: "Domain",
+      skills: ["SampleManager LIMS", "VGL Scripting", "LES Methods", "Bio Repository 2.0", "21 CFR Part 11"],
+      gradient: "from-orange-500/20 to-red-500/20",
+    },
+  ];
+
   return (
-    <section id="skills" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-primary)" }}>
+    <section id="skills" className="py-24" style={{ backgroundColor: "var(--bg-secondary)" }}>
       <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader index="04" title="Skills & Technologies" />
-        <div className="grid md:grid-cols-2 gap-5">
-          {skillCategories.map((cat, ci) => (
-            <motion.div key={cat.key}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: ci * 0.1 }}
-              whileHover={{ y: -4 }}
-              className="p-6 rounded-xl border transition-all duration-300 card-glow"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-              <div className="flex items-center gap-2 mb-4">
-                <span style={{ color: "var(--accent)" }}>{cat.icon}</span>
-                <h3 className="font-mono text-xs tracking-widest uppercase gradient-text">{cat.label}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {portfolioData.skills[cat.key].map((skill, si) => (
-                  <motion.span key={skill}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: ci * 0.1 + si * 0.04 }}
-                    whileHover={{ scale: 1.08, y: -2 }}
-                    className="font-mono text-xs px-3 py-1.5 rounded-lg border transition-all duration-200 cursor-default"
-                    style={{ backgroundColor: "var(--bg-secondary)", color: "var(--text-secondary)", borderColor: "var(--border)" }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.color = "var(--text-primary)"; e.currentTarget.style.backgroundColor = "var(--accent-glow)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.backgroundColor = "var(--bg-secondary)"; }}>
-                    {skill}
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
+        <SectionHeader index="03" title="Skills & Expertise" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {skillCategories.map((category, idx) => (
+            <AnimatedSection key={idx} delay={idx * 0.15}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className={`p-8 rounded-3xl backdrop-blur-md bg-gradient-to-br ${category.gradient} transition-all`}>
+                
+                {/* Category Title */}
+                <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+                  {category.title}
+                </h3>
+
+                {/* Skill Tags */}
+                <div className="flex flex-wrap gap-3">
+                  {category.skills.map((skill, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md transition-all hover:scale-105"
+                      style={{
+                        background: "rgba(157, 78, 221, 0.2)",
+                        color: "#9d4edd",
+                        border: "1px solid rgba(157, 78, 221, 0.3)",
+                      }}>
+                      {skill}
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            </AnimatedSection>
           ))}
         </div>
+
+        {/* Tools & Platforms - Horizontal Scroll Style */}
+        <AnimatedSection delay={0.6}>
+          <div className="mt-16">
+            <h3 className="text-2xl font-bold mb-8" style={{ color: "var(--text-primary)" }}>
+              Tools & Platforms
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              {["Git", "GitHub", "VS Code", "Postman", "Vercel", "Render"].map((tool, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  whileHover={{ y: -8 }}
+                  className="p-4 rounded-2xl text-center backdrop-blur-md transition-all"
+                  style={{ 
+                    background: "linear-gradient(135deg, rgba(157, 78, 221, 0.15), rgba(0, 255, 65, 0.08))" 
+                  }}>
+                  <p className="font-semibold text-sm" style={{ color: "var(--text-primary)" }}>
+                    {tool}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </AnimatedSection>
       </div>
     </section>
   );
