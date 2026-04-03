@@ -4,25 +4,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────
+   THEME TOKENS
+   dark-ready: swap --bg-* and --text-* for light mode via .light class
+───────────────────────────────────────── */
 :root {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #111111;
-  --bg-card: #141414;
-  --accent-amber: #f59e0b;
-  --accent-green: #10b981;
-  --text-primary: #f5f5f5;
-  --text-secondary: #a3a3a3;
-  --text-muted: #525252;
-  --border-subtle: rgba(255,255,255,0.06);
-  --grid-color: rgba(255,255,255,0.025);
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'Space Mono', monospace;
-  --font-body: 'DM Sans', sans-serif;
+  /* Backgrounds */
+  --bg-primary:    #0a0a0a;
+  --bg-secondary:  #111111;
+  --bg-card:       #141414;
+  --bg-hover:      #1a1a1a;
+
+  /* Accent */
+  --accent:        #f59e0b;
+  --accent-dim:    rgba(245, 158, 11, 0.15);
+  --accent-glow:   rgba(245, 158, 11, 0.08);
+
+  /* Text */
+  --text-primary:  #f5f5f5;
+  --text-secondary:#a3a3a3;
+  --text-muted:    #525252;
+
+  /* Borders */
+  --border:        rgba(255, 255, 255, 0.06);
+  --border-accent: rgba(245, 158, 11, 0.3);
+
+  /* Grid texture */
+  --grid:          rgba(255, 255, 255, 0.025);
+
+  /* Typography */
+  --font-display:  'Syne', sans-serif;
+  --font-mono:     'Space Mono', monospace;
+  --font-body:     'DM Sans', sans-serif;
+
+  /* Spacing scale */
+  --section-pad-y: clamp(5rem, 10vw, 8rem);
+  --container-x:   clamp(1.5rem, 6vw, 6rem);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Light theme override — ready but not activated yet */
+.light {
+  --bg-primary:    #fafafa;
+  --bg-secondary:  #f3f3f3;
+  --bg-card:       #ffffff;
+  --bg-hover:      #ebebeb;
+  --text-primary:  #0a0a0a;
+  --text-secondary:#404040;
+  --text-muted:    #a3a3a3;
+  --border:        rgba(0, 0, 0, 0.08);
+  --grid:          rgba(0, 0, 0, 0.03);
+}
 
-html { scroll-behavior: smooth; background-color: var(--bg-primary); }
+/* ─────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  font-size: 16px;
+}
 
 body {
   font-family: var(--font-body);
@@ -30,46 +76,63 @@ body {
   color: var(--text-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-::-webkit-scrollbar { width: 2px; }
+/* ─────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────── */
+::-webkit-scrollbar       { width: 2px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: var(--accent-amber); }
-::selection { background: rgba(245,158,11,0.2); color: var(--text-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 0; }
 
-.grid-bg {
-  background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 48px 48px;
+/* ─────────────────────────────────────────
+   SELECTION
+───────────────────────────────────────── */
+::selection {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--text-primary);
 }
 
-@keyframes scan { 0% { top: -2px; } 100% { top: 100%; } }
-@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
-@keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-@keyframes pulse-ring { 0% { transform:scale(1); opacity:0.6; } 100% { transform:scale(1.4); opacity:0; } }
+/* ─────────────────────────────────────────
+   TYPOGRAPHY UTILITIES
+───────────────────────────────────────── */
+.font-display { font-family: var(--font-display); }
+.font-mono    { font-family: var(--font-mono); }
+.font-body    { font-family: var(--font-body); }
 
-.cursor-blink { animation: blink 1s step-end infinite; }
-.float-anim { animation: float 4s ease-in-out infinite; }
-
-.scan-line {
-  position: fixed;
-  left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245,158,11,0.2), transparent);
-  animation: scan 10s linear infinite;
-  pointer-events: none;
-  z-index: 9998;
-}
-
-.glow-amber { box-shadow: 0 0 30px rgba(245,158,11,0.12); }
-.text-glow { text-shadow: 0 0 40px rgba(245,158,11,0.35); }
-
-.section-label {
+/* Section label — monospace micro-tag used across all sections */
+.label {
   font-family: var(--font-mono);
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent-amber);
+  color: var(--accent);
+}
+
+/* ─────────────────────────────────────────
+   LAYOUT UTILITIES
+───────────────────────────────────────── */
+.container-x {
+  padding-left:  var(--container-x);
+  padding-right: var(--container-x);
+}
+
+.section-y {
+  padding-top:    var(--section-pad-y);
+  padding-bottom: var(--section-pad-y);
+}
+
+/* ─────────────────────────────────────────
+   BACKGROUND TEXTURES
+───────────────────────────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 .noise-overlay {
@@ -80,3 +143,84 @@ body {
   pointer-events: none;
   z-index: 9999;
 }
+
+/* ─────────────────────────────────────────
+   AMBIENT EFFECTS
+───────────────────────────────────────── */
+@keyframes scan {
+  0%   { top: -2px; }
+  100% { top: 100%; }
+}
+
+.scan-line {
+  position: fixed;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.18), transparent);
+  animation: scan 12s linear infinite;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ─────────────────────────────────────────
+   COMPONENT BASE STYLES
+───────────────────────────────────────── */
+
+/* Card — base style, extended per section */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: border-color 0.3s ease;
+}
+.card:hover {
+  border-color: var(--border-accent);
+}
+
+/* Corner accent brackets */
+.corner-tl,
+.corner-tr,
+.corner-bl,
+.corner-br {
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.corner-tl { top: 0;    left:  0; border-top:  1px solid var(--accent); border-left:  1px solid var(--accent); }
+.corner-tr { top: 0;    right: 0; border-top:  1px solid var(--accent); border-right: 1px solid var(--accent); }
+.corner-bl { bottom: 0; left:  0; border-bottom: 1px solid var(--accent); border-left:  1px solid var(--accent); }
+.corner-br { bottom: 0; right: 0; border-bottom: 1px solid var(--accent); border-right: 1px solid var(--accent); }
+
+/* Glow helpers */
+.glow        { box-shadow: 0 0 30px var(--accent-glow); }
+.text-glow   { text-shadow: 0 0 40px rgba(245, 158, 11, 0.35); }
+
+/* Animated underline on links */
+.underline-hover {
+  position: relative;
+}
+.underline-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.underline-hover:hover::after {
+  transform: scaleX(1);
+}
+
+/* ─────────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────────── */
+@keyframes blink  { 0%,100%{ opacity:1 } 50%{ opacity:0 } }
+@keyframes float  { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-8px) } }
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.5); opacity: 0;   }
+}
+
+.cursor-blink  { animation: blink 1s step-end infinite; }
+.float-anim    { animation: float 4s ease-in-out infinite; }
