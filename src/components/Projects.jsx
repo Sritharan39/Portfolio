@@ -1,165 +1,121 @@
-import { portfolioData } from "../data/portfolioData";
-import { FiGithub, FiExternalLink, FiCode } from "react-icons/fi";
-import { motion } from "framer-motion";
-import SectionHeader from "./SectionHeader";
-import AnimatedSection from "./AnimatedSection";
+"use client";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { projects } from "@/lib/data";
 
-export default function Projects() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
+function ProjectCard({ project, index, inView }) {
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <section id="projects" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-primary)" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader index="06" title="Featured Projects" />
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: index * 0.12 + 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      className="relative group border border-white/6 bg-[#111111] p-8 overflow-hidden cursor-default hover:border-amber-500/20 transition-colors"
+    >
+      {/* Hover fill */}
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        className="absolute inset-0 bg-gradient-to-br from-amber-500/3 to-transparent pointer-events-none"
+      />
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          {portfolioData.projects.map((project, i) => (
-            <AnimatedSection key={i} delay={i * 0.1}>
-              <motion.div
-                whileHover={{ y: -8, scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="group h-full rounded-2xl border overflow-hidden transition-all duration-300"
-                style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-                {/* Project Image/Background */}
-                <div
-                  className="h-48 relative overflow-hidden bg-gradient-to-br from-purple-500/10 to-pink-500/10"
-                  style={{
-                    backgroundImage: `linear-gradient(135deg, var(--accent-glow), rgba(var(--accent-rgb), 0.05))`,
-                  }}>
-                  <motion.div
-                    className="absolute inset-0 flex items-center justify-center"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}>
-                    <FiCode size={64} style={{ color: "var(--accent)", opacity: 0.3 }} />
-                  </motion.div>
-                </div>
+      {/* Top row */}
+      <div className="flex items-start justify-between mb-6">
+        <span className="font-mono text-[10px] text-amber-500 tracking-widest">
+          PROJECT_{project.id}
+        </span>
+        <div className="flex items-center gap-2">
+          <div className={`w-1.5 h-1.5 rounded-full ${project.status === "Production" || project.status === "Live" ? "bg-emerald-400" : "bg-amber-500"} animate-pulse`} />
+          <span className="font-mono text-[10px] text-[#525252] tracking-wider">{project.status}</span>
+        </div>
+      </div>
 
-                {/* Content */}
-                <div className="p-6">
-                  {/* Title */}
-                  <h3 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
-                    {project.name}
-                  </h3>
+      {/* Year */}
+      <div className="font-mono text-[10px] text-[#525252] tracking-wider mb-3">{project.year}</div>
 
-                  {/* Description */}
-                  <p className="text-sm mb-4 line-clamp-2" style={{ color: "var(--text-secondary)" }}>
-                    {project.desc}
-                  </p>
+      {/* Title */}
+      <h3 className="font-display font-bold text-xl md:text-2xl text-white mb-4 leading-tight group-hover:text-amber-500 transition-colors">
+        {project.title}
+      </h3>
 
-                  {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech.slice(0, 3).map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs px-3 py-1 rounded-full"
-                        style={{
-                          backgroundColor: "var(--accent-glow)",
-                          color: "var(--accent)",
-                        }}>
-                        {tech}
-                      </span>
-                    ))}
-                    {project.tech.length > 3 && (
-                      <span
-                        className="text-xs px-3 py-1 rounded-full"
-                        style={{
-                          backgroundColor: "var(--accent-glow)",
-                          color: "var(--accent)",
-                        }}>
-                        +{project.tech.length - 3}
-                      </span>
-                    )}
-                  </div>
+      {/* Description */}
+      <p className="text-[#525252] text-sm font-light leading-relaxed mb-8">
+        {project.description}
+      </p>
 
-                  {/* Status Badge */}
-                  <div className="flex items-center justify-between mb-6">
-                    <span
-                      className="text-xs font-mono px-3 py-1 rounded-lg"
-                      style={{
-                        backgroundColor: project.status === "Completed" ? "rgba(52, 211, 153, 0.2)" : "rgba(249, 115, 22, 0.2)",
-                        color: project.status === "Completed" ? "#34D399" : "#F97316",
-                      }}>
-                      {project.status}
-                    </span>
-                    {project.featured && (
-                      <span className="text-xs font-mono" style={{ color: "var(--accent)" }}>
-                        ⭐ Featured
-                      </span>
-                    )}
-                  </div>
+      {/* Tags */}
+      <div className="flex flex-wrap gap-2 mt-auto">
+        {project.tags.map((tag) => (
+          <span
+            key={tag}
+            className="font-mono text-[9px] text-[#525252] border border-white/6 px-2.5 py-1 tracking-widest uppercase"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
 
-                  {/* Links */}
-                  <div className="flex gap-4 pt-4 border-t" style={{ borderColor: "var(--border)" }}>
-                    {project.githubUrl && (
-                      <motion.a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        whileHover={{ scale: 1.1 }}
-                        className="flex items-center gap-2 text-sm transition-colors"
-                        style={{ color: "var(--text-muted)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}>
-                        <FiGithub size={16} /> Code
-                      </motion.a>
-                    )}
-                    {project.liveUrl && (
-                      <motion.a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        whileHover={{ scale: 1.1 }}
-                        className="flex items-center gap-2 text-sm transition-colors ml-auto"
-                        style={{ color: "var(--text-muted)" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}>
-                        Live Demo <FiExternalLink size={16} />
-                      </motion.a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatedSection>
+      {/* Arrow */}
+      <motion.div
+        animate={{ x: hovered ? 0 : -8, opacity: hovered ? 1 : 0 }}
+        className="absolute bottom-8 right-8 text-amber-500 font-mono text-lg"
+      >
+        →
+      </motion.div>
+
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-amber-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+    </motion.div>
+  );
+}
+
+export default function Projects() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section id="projects" ref={ref} className="relative py-32 md:py-48 bg-[#0d0d0d] overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-24">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-20 gap-6">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              className="section-label mb-4"
+            >
+              ◈ WORK SAMPLES
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.1 }}
+              className="font-display font-black text-4xl md:text-6xl text-white"
+            >
+              Projects
+            </motion.h2>
+          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.3 }}
+            className="font-mono text-[10px] text-[#525252] tracking-wider"
+          >
+            TOTAL_RECORDS: {projects.length.toString().padStart(2, "0")}<br />
+            FILTER: ALL
+          </motion.div>
+        </div>
+
+        {/* Projects grid — 2 col on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/4">
+          {projects.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} inView={inView} />
           ))}
-        </motion.div>
-
-        {/* View All Projects Link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="text-center">
-          <motion.a
-            href="#"
-            whileHover={{ x: 4 }}
-            className="inline-flex items-center gap-2 text-sm font-mono"
-            style={{ color: "var(--accent)" }}>
-            View More Projects → 
-          </motion.a>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

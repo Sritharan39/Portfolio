@@ -1,229 +1,206 @@
-import { useEffect, useState } from "react";
-import { portfolioData } from "../data/portfolioData";
-import { FiArrowDown, FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
-import { motion } from "framer-motion";
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { personalInfo } from "@/lib/data";
 
-export default function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+const BOOT_LINES = [
+  "SYS » Initializing portfolio kernel...",
+  "LIMS » Loading SampleManager modules...",
+  "NET  » Establishing secure connection...",
+  "DATA » Mounting project registry...",
+  "AUTH » Identity verified: SRITHARAN",
+  "STATUS » All systems operational ✓",
+];
+
+function BootSequence({ onComplete }) {
+  const [lines, setLines] = useState([]);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    let i = 0;
+    const id = setInterval(() => {
+      if (i < BOOT_LINES.length) {
+        setLines((prev) => [...prev, BOOT_LINES[i]]);
+        i++;
+      } else {
+        clearInterval(id);
+        setTimeout(() => { setDone(true); onComplete(); }, 400);
+      }
+    }, 260);
+    return () => clearInterval(id);
   }, []);
 
-  const socialLinks = [
-    { icon: <FiGithub size={22} />, href: portfolioData.social.github, delay: 0.2 },
-    { icon: <FiLinkedin size={22} />, href: portfolioData.social.linkedin, delay: 0.3 },
-    { icon: <FiMail size={22} />, href: portfolioData.social.email, delay: 0.4 },
-  ];
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="font-mono text-xs text-[#525252] space-y-1 mb-8"
+    >
+      {lines.map((line, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+          className={i === lines.length - 1 && done ? "text-amber-500" : ""}
+        >
+          {line}
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}
+
+export default function Hero() {
+  const ref = useRef(null);
+  const [bootDone, setBootDone] = useState(false);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   return (
-    <section 
-      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-20" 
-      style={{ backgroundColor: "var(--bg-primary)" }}>
-      
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Purple gradient orbs */}
-        <motion.div
-          animate={{ y: scrollY * 0.4, x: Math.sin(scrollY * 0.005) * 30 }}
-          className="absolute top-1/4 -left-40 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ 
-            background: "radial-gradient(circle, #9d4edd, transparent)",
-            filter: "blur(120px)"
-          }}
-        />
-        
-        {/* Lime accent orb */}
-        <motion.div
-          animate={{ y: scrollY * -0.4, x: Math.cos(scrollY * 0.005) * 30 }}
-          className="absolute bottom-1/3 -right-40 w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ 
-            background: "radial-gradient(circle, #00ff41, transparent)",
-            filter: "blur(120px)"
-          }}
-        />
-        
-        {/* Subtle grid */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(rgba(157, 78, 221, 0.02) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(157, 78, 221, 0.02) 1px, transparent 1px)`,
-            backgroundSize: "100px 100px",
-          }}
-        />
+    <section
+      ref={ref}
+      id="hero"
+      className="relative min-h-screen flex flex-col justify-center overflow-hidden grid-bg"
+    >
+      {/* Ambient glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-amber-500/3 blur-[100px] pointer-events-none" />
+
+      {/* Vertical label */}
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-4">
+        <div className="w-px h-24 bg-gradient-to-b from-transparent to-amber-500/50" />
+        <span className="section-label rotate-90 whitespace-nowrap">PORTFOLIO 2025</span>
+        <div className="w-px h-24 bg-gradient-to-t from-transparent to-amber-500/50" />
       </div>
 
-      {/* Main Container - Centered */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col items-center justify-center">
-        
-        {/* Top Badge - Centered */}
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8 inline-block">
-          <div 
-            className="flex items-center gap-3 px-6 py-2.5 rounded-full border-2 backdrop-blur-sm"
-            style={{
-              borderColor: "#9d4edd",
-              background: "rgba(157, 78, 221, 0.1)",
-            }}>
-            <span style={{ color: "#00ff41" }} className="text-lg font-bold">●</span>
-            <span style={{ color: "var(--text-secondary)" }} className="text-sm font-semibold tracking-wide">
-              VIBRANT DEVELOPER
-            </span>
-            <span style={{ color: "#9d4edd" }} className="text-lg font-bold">●</span>
-          </div>
-        </motion.div>
-
-        {/* Main Heading - Centered & Properly Aligned */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="mb-6 text-center w-full">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black leading-tight mb-6 w-full" 
-            style={{ color: "var(--text-primary)" }}>
-            <span className="block">Building Bold</span>
-            <span 
-              className="block"
-              style={{
-                background: "linear-gradient(90deg, #9d4edd, #c77dff, #00ff41)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
-              Digital Visions
-            </span>
-          </h1>
-          <p className="text-base sm:text-lg lg:text-xl font-normal tracking-wide" style={{ color: "var(--text-muted)" }}>
-            Creative Developer • LIMS Expert • Full-Stack Architect
-          </p>
-        </motion.div>
-
-        {/* Centered Divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="w-32 h-1 rounded-full mb-8"
-          style={{ 
-            background: "linear-gradient(90deg, #9d4edd, #00ff41)",
-            originX: "center"
-          }}
-        />
-
-        {/* Description - Centered */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mb-12 max-w-2xl w-full p-6 sm:p-8 rounded-xl border-2 text-center"
-          style={{
-            borderColor: "#9d4edd",
-            background: "rgba(157, 78, 221, 0.08)",
-          }}>
-          <p className="text-sm sm:text-base lg:text-lg leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            Transforming ideas into stunning applications. Specializing in LIMS systems, 
-            modern web development, and creating experiences that inspire.
-          </p>
-        </motion.div>
-
-        {/* CTA Buttons - Centered Stack */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center w-full mb-16">
-          <motion.a
-            href="#projects"
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition-all text-center"
-            style={{ 
-              background: "linear-gradient(135deg, #9d4edd, #c77dff)",
-              color: "#fff",
-              boxShadow: "0 15px 40px rgba(157, 78, 221, 0.35)",
-              letterSpacing: "0.02em"
-            }}>
-            VIEW MY WORK
-          </motion.a>
-          <motion.a
-            href="#contact"
-            whileHover={{ scale: 1.05, y: -4 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 sm:px-10 py-3.5 sm:py-4 rounded-lg font-bold text-base sm:text-lg border-2 transition-all text-center"
-            style={{ 
-              borderColor: "#9d4edd",
-              color: "var(--text-primary)",
-              background: "rgba(157, 78, 221, 0.1)",
-              letterSpacing: "0.02em"
-            }}>
-            GET IN TOUCH
-          </motion.a>
-        </motion.div>
-
-        {/* Social Links - Centered */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="flex justify-center gap-6 items-center">
-          {socialLinks.map((link, i) => (
-            <motion.a
-              key={i}
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: link.delay }}
-              whileHover={{ scale: 1.2, y: -8 }}
-              className="w-14 h-14 rounded-lg border-2 flex items-center justify-center transition-all"
-              style={{ 
-                borderColor: "#9d4edd",
-                color: "#9d4edd",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = "0 0 25px rgba(157, 78, 221, 0.5)";
-                e.currentTarget.style.backgroundColor = "rgba(157, 78, 221, 0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.backgroundColor = "transparent";
-              }}>
-              {link.icon}
-            </motion.a>
-          ))}
-        </motion.div>
+      {/* Right vertical social */}
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-4">
+        <div className="w-px h-24 bg-gradient-to-b from-transparent to-white/10" />
+        <a href={personalInfo.github} target="_blank" className="section-label rotate-90 whitespace-nowrap text-[#525252] hover:text-amber-500 transition-colors">GITHUB</a>
+        <div className="w-px h-8 bg-white/10" />
+        <a href={personalInfo.linkedin} target="_blank" className="section-label rotate-90 whitespace-nowrap text-[#525252] hover:text-amber-500 transition-colors">LINKEDIN</a>
+        <div className="w-px h-24 bg-gradient-to-t from-transparent to-white/10" />
       </div>
 
-      {/* Scroll Indicator - Centered at Bottom */}
       <motion.div
-        animate={{ y: [0, 15, 0] }}
-        transition={{ duration: 2.5, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-        <a href="#about" className="flex flex-col items-center gap-3 cursor-pointer">
-          <span className="text-xs font-mono tracking-widest" style={{ color: "#9d4edd" }}>
-            SCROLL TO EXPLORE
-          </span>
+        style={{ y, opacity }}
+        className="max-w-7xl mx-auto px-6 md:px-24 w-full pt-24 pb-20"
+      >
+        {/* Boot sequence */}
+        <BootSequence onComplete={() => setBootDone(true)} />
+
+        {/* Main headline */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={bootDone ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6 }}
+        >
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2.5, repeat: Infinity }}>
-            <FiArrowDown size={24} style={{ color: "#00ff41" }} />
+            initial={{ opacity: 0, y: 20 }}
+            animate={bootDone ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            className="section-label mb-6"
+          >
+            ◈ SOFTWARE DEVELOPER · LIMS SPECIALIST
           </motion.div>
-        </a>
+
+          <h1 className="font-display font-black leading-none tracking-tight mb-6">
+            <motion.span
+              initial={{ opacity: 0, y: 60 }}
+              animate={bootDone ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="block text-6xl md:text-8xl lg:text-[10rem] text-white"
+            >
+              SRITHA
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 60 }}
+              animate={bootDone ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="block text-6xl md:text-8xl lg:text-[10rem] text-transparent"
+              style={{
+                WebkitTextStroke: "1px rgba(255,255,255,0.2)",
+              }}
+            >
+              RAN
+              <span className="text-amber-500" style={{ WebkitTextStroke: "none" }}>.</span>
+            </motion.span>
+          </h1>
+
+          <div className="flex flex-col md:flex-row md:items-end gap-8 md:gap-16">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={bootDone ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-[#a3a3a3] text-base md:text-lg max-w-md leading-relaxed font-light"
+            >
+              {personalInfo.bio}
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={bootDone ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.55 }}
+              className="flex items-center gap-6 shrink-0"
+            >
+              <motion.a
+                href="#projects"
+                className="group flex items-center gap-3 bg-amber-500 text-black font-mono text-xs font-bold px-6 py-3.5 tracking-widest hover:bg-amber-400 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                VIEW WORK
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </motion.a>
+              <motion.a
+                href="#about"
+                className="font-mono text-xs text-[#a3a3a3] tracking-widest hover:text-white transition-colors border-b border-white/20 pb-0.5"
+                whileHover={{ scale: 1.02 }}
+              >
+                ABOUT ME
+              </motion.a>
+            </motion.div>
+          </div>
+
+          {/* Stats row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={bootDone ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-20 pt-8 border-t border-white/5 flex flex-wrap gap-12"
+          >
+            {[
+              { val: personalInfo.yearsExp, label: "Years Experience" },
+              { val: personalInfo.projectsBuilt, label: "Projects Built" },
+              { val: personalInfo.systemsIntegrated, label: "Systems Integrated" },
+              { val: "UST", label: "Current Employer" },
+            ].map((s) => (
+              <div key={s.label}>
+                <div className="font-display font-bold text-3xl text-white text-glow">{s.val}</div>
+                <div className="font-mono text-[10px] text-[#525252] tracking-widest mt-1 uppercase">{s.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
       </motion.div>
 
-      {/* Parallax Accent Line */}
+      {/* Scroll indicator */}
       <motion.div
-        animate={{ scaleX: 1 + scrollY * 0.0008 }}
-        className="absolute top-1/3 left-0 right-0 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, #9d4edd, transparent)" }}
-      />
+        initial={{ opacity: 0 }}
+        animate={bootDone ? { opacity: 1 } : {}}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span className="section-label">SCROLL</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="w-px h-8 bg-gradient-to-b from-amber-500/60 to-transparent"
+        />
+      </motion.div>
     </section>
   );
 }

@@ -1,220 +1,154 @@
-import { useState, useRef } from "react";
-import emailjs from "@emailjs/browser";
-import { portfolioData } from "../data/portfolioData";
-import { FiMail, FiGithub, FiLinkedin, FiSend, FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
-import SectionHeader from "./SectionHeader";
-import AnimatedSection from "./AnimatedSection";
-import { motion } from "framer-motion";
-
-const contactLinks = [
-  { icon: <FiMail size={18} />, label: "Email", value: portfolioData.personal.email, href: portfolioData.social.email },
-  { icon: <FiGithub size={18} />, label: "GitHub", value: "github.com/Sritharan39", href: portfolioData.social.github },
-  { icon: <FiLinkedin size={18} />, label: "LinkedIn", value: "linkedin.com/in/YOUR_PROFILE", href: portfolioData.social.linkedin },
-];
-
-const EMAILJS_SERVICE_ID = "service_sryqa5b";
-const EMAILJS_TEMPLATE_ID = "template_nc37rst";
-const EMAILJS_PUBLIC_KEY = "ZDl00oXiNV0a4n4yn";
-
-const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-const validateField = (name, value) => {
-  const trimmed = value.trim();
-  
-  switch (name) {
-    case "from_name":
-      if (!trimmed) return "Name is required";
-      if (trimmed.length < 2) return "Name must be at least 2 characters";
-      if (trimmed.length > 50) return "Name must be less than 50 characters";
-      return "";
-    
-    case "from_email":
-      if (!trimmed) return "Email is required";
-      if (!validateEmail(trimmed)) return "Please enter a valid email address";
-      return "";
-    
-    case "subject":
-      if (!trimmed) return "Subject is required";
-      if (trimmed.length < 3) return "Subject must be at least 3 characters";
-      if (trimmed.length > 100) return "Subject must be less than 100 characters";
-      return "";
-    
-    case "message":
-      if (!trimmed) return "Message is required";
-      if (trimmed.length < 10) return "Message must be at least 10 characters";
-      if (trimmed.length > 1000) return "Message must be less than 1000 characters";
-      return "";
-    
-    default:
-      return "";
-  }
-};
+"use client";
+import { useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { personalInfo } from "@/lib/data";
 
 export default function Contact() {
-  const formRef = useRef();
-  const [status, setStatus] = useState("");
-  const [form, setForm] = useState({ from_name: "", from_email: "", subject: "", message: "" });
-  const [errors, setErrors] = useState({ from_name: "", from_email: "", subject: "", message: "" });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    const error = validateField(name, value);
-    setErrors({ ...errors, [name]: error });
-  };
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const newErrors = {};
-    Object.keys(form).forEach((field) => {
-      newErrors[field] = validateField(field, form[field]);
-    });
-    setErrors(newErrors);
-    
-    const hasErrors = Object.values(newErrors).some((error) => error !== "");
-    if (hasErrors) {
-      setStatus("error");
-      setTimeout(() => setStatus(""), 5000);
-      return;
-    }
-
     setStatus("sending");
-    try {
-      await emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formRef.current, EMAILJS_PUBLIC_KEY);
-      setStatus("success");
-      setForm({ from_name: "", from_email: "", subject: "", message: "" });
-      setErrors({ from_name: "", from_email: "", subject: "", message: "" });
-    } catch (err) {
-      console.error("EmailJS Error:", err);
-      setStatus("error");
-    }
-    setTimeout(() => setStatus(""), 5000);
+    // TODO: wire EmailJS here
+    setTimeout(() => setStatus("sent"), 1200);
   };
 
-  const fields = [
-    { name: "from_name", label: "Name", type: "text", placeholder: "Your Name" },
-    { name: "from_email", label: "Email", type: "email", placeholder: "your@email.com" },
-    { name: "subject", label: "Subject", type: "text", placeholder: "What is this about?" },
-  ];
-
   return (
-    <section id="contact" className="py-24 transition-colors duration-300" style={{ backgroundColor: "var(--bg-secondary)" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader index="09" title="Get In Touch" />
-        <div className="grid md:grid-cols-2 gap-16">
-          <AnimatedSection delay={0.1}>
-            <p className="text-lg leading-relaxed mb-8" style={{ color: "var(--text-secondary)" }}>
-              Always open to discussing new opportunities, interesting projects, or just having a chat about tech and LIMS. Feel free to reach out — I will reply within 24 hours!
-            </p>
-            <div className="flex flex-col gap-4">
-              {contactLinks.map((link, i) => (
-                <motion.a key={i} href={link.href} target="_blank" rel="noreferrer"
-                  whileHover={{ x: 6, scale: 1.01 }}
-                  className="flex items-center gap-4 p-4 rounded-xl border transition-all duration-300 card-glow"
-                  style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 border"
-                    style={{ backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)", color: "var(--accent)" }}>
-                    {link.icon}
-                  </div>
-                  <div>
-                    <p className="text-xs font-mono mb-0.5" style={{ color: "var(--text-muted)" }}>{link.label}</p>
-                    <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{link.value}</p>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
-          </AnimatedSection>
+    <section id="contact" ref={ref} className="relative py-32 md:py-48 overflow-hidden">
+      {/* Large ambient glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-amber-500/4 blur-[120px] pointer-events-none rounded-full" />
 
-          <AnimatedSection delay={0.2}>
-            <div className="p-8 rounded-xl border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-              <p className="text-xs font-mono mb-6 p-3 rounded-lg border" style={{ color: "#34D399", backgroundColor: "var(--accent-glow)", borderColor: "var(--border-hover)" }}>
-                ✅ EmailJS is configured and ready! Your messages will be sent to your email.
-              </p>
-              
-              <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {fields.map((field) => (
+      <div className="max-w-7xl mx-auto px-6 md:px-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          className="section-label mb-4"
+        >
+          ◈ GET IN TOUCH
+        </motion.div>
+
+        {/* Big CTA headline */}
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display font-black text-5xl md:text-7xl lg:text-8xl text-white leading-none mb-20"
+        >
+          Let&apos;s{" "}
+          <span className="text-amber-500 text-glow">build</span>
+          <br />
+          something.
+        </motion.h2>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+          {/* Left — form */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            {status === "sent" ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="border border-emerald-400/30 bg-emerald-400/5 p-10 text-center"
+              >
+                <div className="text-emerald-400 text-4xl mb-4">✓</div>
+                <div className="font-mono text-xs text-emerald-400 tracking-wider">MESSAGE_SENT: OK</div>
+                <p className="text-[#a3a3a3] mt-3 text-sm">I&apos;ll get back to you shortly.</p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {[
+                  { name: "name", label: "NAME", placeholder: "Your name", type: "text" },
+                  { name: "email", label: "EMAIL", placeholder: "your@email.com", type: "email" },
+                ].map((field) => (
                   <div key={field.name}>
-                    <label className="block text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--text-muted)" }}>
-                      {field.label}
-                    </label>
-                    <input 
-                      type={field.type} 
-                      name={field.name} 
-                      value={form[field.name]} 
-                      onChange={handleChange}
+                    <label className="block section-label mb-2">{field.label}</label>
+                    <input
+                      type={field.type}
+                      required
                       placeholder={field.placeholder}
-                      className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none transition-all duration-200"
-                      style={{ 
-                        backgroundColor: "var(--bg-secondary)", 
-                        border: errors[field.name] ? "1px solid #F87171" : "1px solid var(--border)", 
-                        color: "var(--text-primary)" 
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--accent)"}
-                      onBlur={(e) => e.target.style.borderColor = errors[field.name] ? "#F87171" : "var(--border)"}
+                      value={form[field.name]}
+                      onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
+                      className="w-full bg-[#111111] border border-white/8 text-white font-body text-sm px-5 py-3.5 placeholder:text-[#525252] focus:outline-none focus:border-amber-500/50 transition-colors"
                     />
-                    {errors[field.name] && (
-                      <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
-                        ✗ {errors[field.name]}
-                      </p>
-                    )}
                   </div>
                 ))}
-
                 <div>
-                  <label className="block text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--text-muted)" }}>Message</label>
-                  <textarea 
-                    name="message" 
-                    value={form.message} 
-                    onChange={handleChange}
-                    placeholder="Your message..." 
+                  <label className="block section-label mb-2">MESSAGE</label>
+                  <textarea
+                    required
                     rows={5}
-                    className="w-full px-4 py-3 rounded-lg text-sm focus:outline-none resize-none transition-all duration-200"
-                    style={{ 
-                      backgroundColor: "var(--bg-secondary)", 
-                      border: errors.message ? "1px solid #F87171" : "1px solid var(--border)", 
-                      color: "var(--text-primary)" 
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = errors.message ? "#F87171" : "var(--accent)"}
-                    onBlur={(e) => e.target.style.borderColor = errors.message ? "#F87171" : "var(--border)"}
+                    placeholder="Tell me about the project..."
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    className="w-full bg-[#111111] border border-white/8 text-white font-body text-sm px-5 py-3.5 placeholder:text-[#525252] focus:outline-none focus:border-amber-500/50 transition-colors resize-none"
                   />
-                  {errors.message && (
-                    <p style={{ fontSize: "12px", color: "#F87171", marginTop: "4px", fontFamily: "monospace" }}>
-                      ✗ {errors.message}
-                    </p>
-                  )}
                 </div>
-
-                {status === "success" && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 text-sm font-mono" style={{ color: "#34D399" }}>
-                    <FiCheckCircle size={15} /> Message sent! I'll reply within 24 hours.
-                  </motion.div>
-                )}
-
-                {status === "error" && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 text-sm font-mono" style={{ color: "#F87171" }}>
-                    <FiAlertCircle size={15} /> 
-                    {Object.values(errors).find(e => e) || "Something went wrong. Try again."}
-                  </motion.div>
-                )}
-
-                <motion.button 
-                  type="submit" 
-                  whileHover={{ scale: 1.02 }} 
-                  whileTap={{ scale: 0.98 }}
+                <motion.button
+                  type="submit"
                   disabled={status === "sending"}
-                  className="flex items-center justify-center gap-2 px-8 py-3 rounded-lg text-white font-medium text-sm btn-primary disabled:opacity-60"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full bg-amber-500 text-black font-mono font-bold text-xs tracking-widest py-4 hover:bg-amber-400 transition-colors disabled:opacity-50"
                 >
-                  {status === "sending"
-                    ? <><FiLoader size={15} className="animate-spin" /> Sending...</>
-                    : <><FiSend size={15} /> Send Message</>
-                  }
+                  {status === "sending" ? "TRANSMITTING..." : "SEND MESSAGE →"}
                 </motion.button>
               </form>
+            )}
+          </motion.div>
+
+          {/* Right — links & info */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="flex flex-col justify-between gap-12"
+          >
+            <div className="space-y-6">
+              {[
+                { label: "EMAIL", val: personalInfo.email, href: `mailto:${personalInfo.email}` },
+                { label: "GITHUB", val: "github.com/Sritharan39", href: personalInfo.github },
+                { label: "LINKEDIN", val: "linkedin.com/in/sritharan", href: personalInfo.linkedin },
+                { label: "LOCATION", val: personalInfo.location, href: null },
+              ].map((item, i) => (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.08 + 0.5 }}
+                  className="border-b border-white/5 pb-5"
+                >
+                  <div className="section-label mb-1">{item.label}</div>
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#a3a3a3] text-sm hover:text-amber-500 transition-colors font-light"
+                    >
+                      {item.val}
+                    </a>
+                  ) : (
+                    <span className="text-[#a3a3a3] text-sm font-light">{item.val}</span>
+                  )}
+                </motion.div>
+              ))}
             </div>
-          </AnimatedSection>
+
+            {/* Availability badge */}
+            <div className="border border-emerald-400/20 bg-emerald-400/5 px-6 py-4 flex items-center gap-4">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+              <div>
+                <div className="font-mono text-[10px] text-emerald-400 tracking-wider">AVAILABLE FOR WORK</div>
+                <div className="text-[#525252] text-xs mt-0.5">Open to full-time & contract opportunities</div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

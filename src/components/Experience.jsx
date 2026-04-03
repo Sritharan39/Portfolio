@@ -1,125 +1,101 @@
-import { portfolioData } from "../data/portfolioData";
-import { FiBriefcase, FiAward, FiTrendingUp } from "react-icons/fi";
-import { motion } from "framer-motion";
-import SectionHeader from "./SectionHeader";
-import AnimatedSection from "./AnimatedSection";
+"use client";
+import { useRef } from "react";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { experiences } from "@/lib/data";
 
 export default function Experience() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const lineHeight = useTransform(scrollYProgress, [0.1, 0.8], ["0%", "100%"]);
+
   return (
-    <section id="experience" className="py-24" style={{ backgroundColor: "var(--bg-secondary)" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <SectionHeader index="04" title="Professional Experience" />
+    <section id="experience" ref={ref} className="relative py-32 md:py-48 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          className="section-label mb-4"
+        >
+          ◈ WORK HISTORY
+        </motion.div>
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.1 }}
+          className="font-display font-black text-4xl md:text-6xl text-white mb-20"
+        >
+          Experience
+        </motion.h2>
 
-        {portfolioData.experience.map((exp, i) => (
-          <AnimatedSection key={i} delay={i * 0.2}>
+        {/* Timeline */}
+        <div className="relative">
+          {/* Animated vertical line */}
+          <div className="absolute left-0 md:left-[200px] top-0 bottom-0 w-px bg-white/5 hidden md:block">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="mb-8 rounded-3xl overflow-hidden backdrop-blur-md transition-all hover:shadow-2xl"
-              style={{
-                background: "linear-gradient(135deg, rgba(157, 78, 221, 0.12), rgba(0, 255, 65, 0.08))",
-              }}>
-              
-              {/* Header with Icon */}
-              <div className="p-8 sm:p-10 lg:p-12">
-                <div className="flex items-start gap-6 mb-6">
-                  <div 
-                    className="p-4 rounded-2xl flex-shrink-0"
-                    style={{ background: "rgba(157, 78, 221, 0.2)" }}>
-                    <FiBriefcase size={32} style={{ color: "#9d4edd" }} />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
-                      {exp.role}
-                    </h3>
-                    <p className="text-lg mt-2" style={{ color: "#00ff41" }}>
-                      {exp.company}
-                    </p>
-                    <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
-                      {exp.period}
-                    </p>
-                  </div>
-                </div>
+              style={{ height: lineHeight }}
+              className="w-full bg-gradient-to-b from-amber-500 to-amber-500/0"
+            />
+          </div>
 
-                {/* Description */}
-                <div className="mb-8">
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
-                    Key Responsibilities
-                  </h4>
-                  <ul className="space-y-3">
-                    {exp.description.map((desc, idx) => (
-                      <motion.li
-                        key={idx}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
-                        className="flex gap-3 items-start"
-                        style={{ color: "var(--text-secondary)" }}>
-                        <span style={{ color: "#00ff41" }} className="mt-1.5 flex-shrink-0">▸</span>
-                        <span>{desc}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tech Stack */}
-                <div>
-                  <h4 className="text-sm font-bold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
-                    Tech Stack
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {exp.tech.map((tech, idx) => (
-                      <motion.span
-                        key={idx}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className="px-4 py-2 rounded-full text-xs font-semibold backdrop-blur-sm"
-                        style={{
-                          background: "rgba(0, 255, 65, 0.15)",
-                          color: "#00ff41",
-                        }}>
-                        {tech}
-                      </motion.span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatedSection>
-        ))}
-
-        {/* Summary Stats */}
-        <AnimatedSection delay={0.6}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-            {[
-              { icon: <FiAward size={28} />, value: "5+", label: "Years in Tech" },
-              { icon: <FiTrendingUp size={28} />, value: "50+", label: "Solutions Built" },
-              { icon: <FiBriefcase size={28} />, value: "100%", label: "Project Success" },
-            ].map((stat, i) => (
+          <div className="space-y-16">
+            {experiences.map((exp, i) => (
               <motion.div
                 key={i}
-                whileHover={{ scale: 1.05 }}
-                className="p-6 rounded-2xl text-center backdrop-blur-md"
-                style={{
-                  background: "rgba(157, 78, 221, 0.08)",
-                }}>
-                <div 
-                  className="flex justify-center mb-3"
-                  style={{ color: "#00ff41" }}>
-                  {stat.icon}
+                initial={{ opacity: 0, y: 40 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: i * 0.15 + 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                className="md:grid md:grid-cols-[200px_1fr] gap-0"
+              >
+                {/* Left — meta */}
+                <div className="hidden md:flex flex-col items-end pr-10 pt-1 gap-2">
+                  <div className="font-mono text-[10px] text-amber-500 tracking-wider text-right">
+                    {exp.period}
+                  </div>
+                  <div className="font-mono text-[10px] text-[#525252] tracking-wider text-right">
+                    {exp.type}
+                  </div>
+                  {/* Timeline dot */}
+                  <div className="relative mt-2">
+                    <div className="absolute left-full ml-px top-1/2 -translate-y-1/2 w-3 h-3 border border-amber-500 bg-[#0a0a0a] rotate-45" />
+                  </div>
                 </div>
-                <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-                  {stat.value}
-                </p>
-                <p className="text-xs mt-2 uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>
-                  {stat.label}
-                </p>
+
+                {/* Right — content */}
+                <div className="md:pl-10 border border-white/6 bg-[#111111] p-8 md:p-10 relative group hover:border-amber-500/20 transition-colors">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/0 group-hover:bg-amber-500/40 transition-colors" />
+
+                  <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="font-display font-bold text-2xl text-white mb-1">{exp.role}</h3>
+                      <div className="font-mono text-sm text-amber-500 tracking-wider">{exp.company}</div>
+                    </div>
+                    <div className="md:hidden">
+                      <div className="font-mono text-[10px] text-amber-500 tracking-wider">{exp.period}</div>
+                    </div>
+                  </div>
+
+                  <p className="text-[#a3a3a3] font-light leading-relaxed mb-8">{exp.description}</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {exp.highlights.map((h, hi) => (
+                      <motion.div
+                        key={hi}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={inView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ delay: hi * 0.08 + 0.6 }}
+                        className="flex items-center gap-3"
+                      >
+                        <span className="text-amber-500 text-xs flex-shrink-0">▸</span>
+                        <span className="font-mono text-[11px] text-[#525252] tracking-wide">{h}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
-        </AnimatedSection>
+        </div>
       </div>
     </section>
   );
