@@ -105,3 +105,51 @@ export const nav = [
   { label: "Projects",   href: "#projects" },
   { label: "Contact",    href: "#contact" },
 ];
+
+export const about = {
+  intro: {
+    greeting: "Hey, I'm Sritharan",
+    tagline:  "I build lab systems that scientists trust.",
+    body:     "Software Developer at UST Global India with 3+ years specializing in SampleManager LIMS. I turn complex laboratory workflows into precise, auditable, and efficient software solutions.",
+  },
+
+  career: [
+    { year: "2022", event: "Joined UST Global India as Software Developer" },
+    { year: "2022", event: "First SampleManager LIMS project delivered" },
+    { year: "2023", event: "Led SDMS integration for enterprise lab client" },
+    { year: "2024", event: "Built Lab Analytics Dashboard used across 3 sites" },
+    { year: "2025", event: "Working toward band promotion — Mid 2026" },
+  ],
+
+  quotes: [
+    { text: "Precision is not a skill. It is a habit.", author: "— Lab Philosophy" },
+    { text: "Good code is its own best documentation.", author: "— Steve McConnell" },
+    { text: "First, solve the problem. Then, write the code.", author: "— John Johnson" },
+    { text: "Make it work, make it right, make it fast.", author: "— Kent Beck" },
+    { text: "Simplicity is the soul of efficiency.", author: "— Austin Freeman" },
+  ],
+
+  skillsSnapshot: [
+    { label: "SampleManager LIMS", level: 90 },
+    { label: "Python",             level: 78 },
+    { label: "React.js",           level: 82 },
+    { label: "SQL",                level: 85 },
+    { label: "REST APIs",          level: 75 },
+  ],
+
+  values: [
+    { icon: "◈", title: "Precision",    desc: "Every data point matters. I build systems that don't lose information." },
+    { icon: "⬡", title: "Reliability",  desc: "Labs depend on uptime. I write code that works when it has to." },
+    { icon: "△", title: "Clarity",      desc: "Complex logic, simple interfaces. Scientists aren't engineers." },
+    { icon: "○", title: "Ownership",    desc: "I see problems through to the end, not just my part of them." },
+  ],
+
+  highlights: [
+    { value: "3+",   label: "Years in LIMS",        suffix: "" },
+    { value: "20+",  label: "Projects Delivered",   suffix: "" },
+    { value: "10+",  label: "Systems Integrated",   suffix: "" },
+    { value: "60",   label: "Manual Entry Reduced",  suffix: "%" },
+    { value: "3",    label: "Lab Sites Served",      suffix: "" },
+    { value: "2026", label: "Promotion Target",      suffix: "" },
+  ],
+};
