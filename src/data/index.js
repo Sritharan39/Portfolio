@@ -14,6 +14,7 @@ export const meta = {
   linkedin:  "https://linkedin.com/in/sritharan", // TODO: replace
   resume:    "/resume.pdf",            // TODO: add to /public
   available: true,
+  bio: "Precision-driven software developer specializing in Laboratory Information Management Systems. I build systems where accuracy is non-negotiable — from sample tracking workflows to LIMS integrations that power scientific research.",
 };
 
 export const stats = [
